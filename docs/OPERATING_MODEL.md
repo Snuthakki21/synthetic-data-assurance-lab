@@ -19,7 +19,7 @@ The repository's unit and independent-review tests are an engineering gate. They
 1. Select an original example or load a reviewed input file. Record its purpose and owner.
 2. Run the application; retain both the input and exported JSON result.
 3. Inspect evidence and exceptions before accepting the summary. Optional model prose remains a draft.
-4. Record the decision, accountable owner and next validation milestone outside this stateless reference application.
+4. Retain the input, result and review in the workspace. Browser records stay in this browser; native records use local SQLite. Record accountable ownership and the next validation milestone in the review evidence. Workspace records do not authorize operational changes or financial transactions.
 5. Re-run when inputs, assumptions, rules or source code change. Compare source/input fingerprints and explain changed outcomes.
 
 ## Measures that matter

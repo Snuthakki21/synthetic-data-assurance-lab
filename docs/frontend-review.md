@@ -1,3 +1,5 @@
+> Historical version 1 review. Expanded version 2 acceptance is recorded in STAFF_REVIEW_V2.md, STAFF_PLATFORM_REVIEW.md and VALIDATION.md.
+
 # Independent automated Staff Engineer frontend review
 
 **Verdict: PASS within the reviewed logic and test scope.** No reproduced blocker remains in the reviewed sources. This is an automated review by a separate agent acting as a Staff Engineer reviewer, not human certification or a guarantee of production readiness.

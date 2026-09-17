@@ -1,0 +1,11 @@
+.git
+.venv
+var
+dist
+build
+*.egg-info
+__pycache__
+**/__pycache__
+.env
+.coverage
+coverage.xml

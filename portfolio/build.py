@@ -44,12 +44,12 @@ def build(destination=None):
             payload = example.get("payload", module.default_input())
             metadata["examples"].append({"label": example["label"], "payload": payload, "report": execute(pid, payload)})
         catalog.append(metadata)
-    data = {"owner": "Seshu Nuthakki", "github": "Snuthakki21", "built_at": datetime.now(timezone.utc).isoformat(), "projects": catalog}
+    data = {"version": "2.0.0", "built_at": datetime.now(timezone.utc).isoformat(), "projects": catalog}
     (destination / "catalog.json").write_text(json.dumps(data, indent=2, allow_nan=False) + "\n")
     (destination / ".nojekyll").touch()
     # The same reviewed source and fixtures execute in the browser, inside a worker.
     with zipfile.ZipFile(destination / "application.zip", "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for directory in ("portfolio", "projects"):
+        for directory in ("portfolio", "projects", "app"):
             for path in sorted((ROOT / directory).rglob("*")):
                 if path.is_file() and "__pycache__" not in path.parts and path.suffix not in {".pyc", ".pyo"}:
                     archive.write(path, path.relative_to(ROOT))

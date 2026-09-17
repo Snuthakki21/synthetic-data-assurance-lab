@@ -1,0 +1,106 @@
+{
+  "seed": 41,
+  "row_counts": {
+    "customers": 40,
+    "orders": 200
+  },
+  "rules": {
+    "version": "original-commerce-v1",
+    "tables": [
+      {
+        "name": "customers",
+        "primary_key": "customer_id",
+        "columns": [
+          {
+            "name": "customer_id",
+            "type": "integer",
+            "min": 1001,
+            "max": 999999
+          },
+          {
+            "name": "segment",
+            "type": "enum",
+            "values": [
+              "small_business",
+              "enterprise",
+              "consumer"
+            ],
+            "weights": [
+              0.35,
+              0.25,
+              0.4
+            ]
+          },
+          {
+            "name": "joined_on",
+            "type": "date",
+            "min": "2025-01-01",
+            "max": "2025-12-31"
+          }
+        ]
+      },
+      {
+        "name": "orders",
+        "primary_key": "order_id",
+        "columns": [
+          {
+            "name": "order_id",
+            "type": "integer",
+            "min": 1,
+            "max": 999999
+          },
+          {
+            "name": "customer_id",
+            "type": "integer",
+            "min": 1001,
+            "max": 999999,
+            "references": "customers.customer_id"
+          },
+          {
+            "name": "amount",
+            "type": "decimal",
+            "min": "0.00",
+            "max": "5000.00",
+            "scale": 2
+          },
+          {
+            "name": "status",
+            "type": "enum",
+            "values": [
+              "pending",
+              "paid",
+              "refunded"
+            ],
+            "weights": [
+              0.15,
+              0.8,
+              0.05
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "audit_overrides": [
+    {
+      "table": "orders",
+      "row": 0,
+      "column": "customer_id",
+      "value": 999998
+    },
+    {
+      "table": "orders",
+      "row": 1,
+      "column": "amount",
+      "value": "5000.001"
+    }
+  ],
+  "rule_request": "Propose a narrower order amount range for boundary testing within the existing rules.",
+  "quality_policy": {
+    "minimum_group_size": 2,
+    "maximum_distribution_distance": 0.25,
+    "require_reference": false
+  },
+  "quasi_identifiers": {},
+  "reference_records": {}
+}

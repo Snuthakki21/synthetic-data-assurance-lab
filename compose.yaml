@@ -1,0 +1,17 @@
+services:
+  application:
+    build: .
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      APP_ACCESS_TOKEN: ${APP_ACCESS_TOKEN:?Set a random access token of at least 32 characters}
+      APP_PUBLIC_ORIGIN: ${APP_PUBLIC_ORIGIN:-http://localhost:8765}
+    volumes:
+      - workspace:/app/var
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+volumes:
+  workspace:

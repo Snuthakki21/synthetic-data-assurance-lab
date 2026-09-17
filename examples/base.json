@@ -82,5 +82,12 @@
     ]
   },
   "audit_overrides": [],
-  "rule_request": "Propose a narrower order amount range for boundary testing within the existing rules."
+  "rule_request": "Propose a narrower order amount range for boundary testing within the existing rules.",
+  "quality_policy": {
+    "minimum_group_size": 2,
+    "maximum_distribution_distance": 0.25,
+    "require_reference": false
+  },
+  "quasi_identifiers": {},
+  "reference_records": {}
 }

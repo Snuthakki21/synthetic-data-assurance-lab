@@ -1,3 +1,5 @@
+> Historical version 1 review. Expanded version 2 acceptance is recorded in STAFF_REVIEW_V2.md, STAFF_PLATFORM_REVIEW.md and VALIDATION.md.
+
 # Independent automated Staff Engineer review: shared application runtime
 
 Reviewed on 2026-09-17 by the non-authoring portfolio-strategy agent. The reviewer did not implement or remediate these shared modules. Review scope: provider/context runtime, project registry, loopback HTTP server, static packaging, JSON-RPC/MCP dispatch and command-line interface. The dedicated Staff Engineer skill perspective was applied by an independent agent; this is not a human sign-off.

@@ -6,7 +6,8 @@ loopback HTTP. No provider credentials, paid calls or external systems are used.
 from contextlib import redirect_stderr, redirect_stdout
 from copy import deepcopy
 from functools import partial
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
+from app.platform.http_server import WorkspaceHTTPServer as ThreadingHTTPServer
 import http.client
 import io
 import json
@@ -314,7 +315,7 @@ class HTTPIntegrationTests(unittest.TestCase):
 
     def test_health_static_file_and_response_headers(self):
         status,headers,raw=self.request('/api/health',method='GET')
-        self.assertEqual(status,200);self.assertEqual(json.loads(raw),{'status':'ready','mode':'local'})
+        self.assertEqual(status,200);self.assertEqual(json.loads(raw),{'status':'ready','mode':'local','version':'2.0.0','workspace':False,'authentication_required':False})
         self.assertEqual(headers['X-Content-Type-Options'],'nosniff');self.assertEqual(headers['Referrer-Policy'],'no-referrer')
         status,_,raw=self.request('/',method='GET');self.assertEqual(status,200);self.assertIn(b'Loopback test',raw)
 

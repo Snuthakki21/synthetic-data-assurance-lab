@@ -64,7 +64,7 @@ test('applyField performs supported type conversions without touching unrelated 
  applyField(payload,'amount','0.20','text');applyField(payload,'count','5','number');applyField(payload,'enabled',false,'checkbox');applyField(payload,'regions','east, central, ,west','list');applyField(payload,'nested.value','7','number');
  assert.deepEqual(payload,{amount:'0.20',count:5,enabled:false,regions:['east','central','west'],nested:{value:7},untouched:{tag:'keep'}});
  for(const value of ['', 'Infinity', 'NaN', 'not a number'])assert.throws(()=>applyField(payload,'count',value,'number'));
- assert.equal(payload.count,5);assert.throws(()=>applyField(payload,'missing.child',1,'number'));
+ assert.equal(payload.count,5);applyField(payload,'missing.child',1,'number');assert.equal(payload.missing.child,1);assert.throws(()=>applyField(payload,'count.child',1,'number'));assert.throws(()=>applyField(payload,'missing..child',1,'number'));
 });
 test('applyField rejects prototype pollution paths before mutation',()=>{
  const payload={nested:{value:1}};
@@ -118,7 +118,7 @@ function harness(){
  const document={querySelector(selector){return element(selector);},querySelectorAll(){return [];},createElement(){const anchor={click(){downloads.push({href:this.href,name:this.download});}};return anchor;},documentElement:{dataset:{}},body:{dataset:{}}};
  const timers=new Map();let nextTimer=0;
  const sandbox={document,console,TextEncoder,AbortController,Blob,crypto:webcrypto,URL:{createObjectURL(value){blob=value;return 'blob:test';},revokeObjectURL(){}},setTimeout(fn){timers.set(++nextTimer,fn);return nextTimer;},clearTimeout(id){timers.delete(id);},window:{scrollTo(){},addEventListener(){}},location:{hash:'',hostname:'example.test'},matchMedia:()=>({matches:false}),fetch:()=>{throw new Error('Unexpected network call in test');},applyField};
- const source=fs.readFileSync(path.join(root,'web/app.js'),'utf8').replace(/^import[^\n]*\n/m,'').replace(/\ninit\(\);\s*$/,'\n');
+ const source=fs.readFileSync(path.join(root,'web/app.js'),'utf8').replace(/^import[^\n]*\n/gm,'').replace(/\ninit\(\);\s*$/,'\n');
  const exposure=`\nglobalThis.appTest={renderReport,downloadReport,cancelRun,runScenario,loadInputFile,restoreExample,runOperation,setState(value){if('current'in value)current=value.current;if('currentReport'in value)currentReport=value.currentReport;if('design'in value)design=value.design;if('renderedPayload'in value)renderedPayload=value.renderedPayload;if('serverMode'in value)serverMode=value.serverMode;},getState(){return {current,currentReport,renderedPayload,runSerial};}};`;
  vm.createContext(sandbox);new vm.Script(source+exposure,{filename:'web/app.js (test harness)'}).runInContext(sandbox);
  const old={summary:'Previous accepted report',evidence:['Original evidence'],next_actions:['Review'],details:{rows:Array.from({length:25},(_,i)=>({id:i,text:'row '+i}))}},payload={marker:'original'};
@@ -223,7 +223,7 @@ function workerHarness({failFirst=false}={}){
  const messages=[],calls=[],values=[];let loads=0;
  const python={unpackArchive(){},globals:{set(key,value){values.push([key,value]);}},async runPythonAsync(source){calls.push(source);if(source.startsWith('request ='))return JSON.stringify({summary:'Computed report'});}};
  const sandbox={console,URL,self:{location:{href:'https://example.test/worker.js'}},postMessage:m=>messages.push(m),loadPyodide:async()=>{if(++loads===1&&failFirst)throw new Error('Initialization failure');return python;},fetch:async()=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(0)})};
- const source=fs.readFileSync(path.join(root,'web/worker.js'),'utf8').replace(/^import[^\n]*\n/m,'');vm.createContext(sandbox);new vm.Script(source,{filename:'web/worker.js (test harness)'}).runInContext(sandbox);
+ const source=fs.readFileSync(path.join(root,'web/worker.js'),'utf8').replace(/^import[^\n]*\n/gm,'');vm.createContext(sandbox);new vm.Script(source,{filename:'web/worker.js (test harness)'}).runInContext(sandbox);
  return {sandbox,messages,calls,values,get loads(){return loads;}};
 }
 test('worker passes scenario text as JSON data instead of interpolated Python',async()=>{

@@ -30,7 +30,7 @@ def projects():
 
 def source_digest():
     digest = hashlib.sha256()
-    for folder in ("portfolio", "projects"):
+    for folder in ("portfolio", "projects", "app"):
         for file in sorted((ROOT / folder).rglob("*")):
             if file.is_file() and file.suffix in {".py", ".json", ".csv", ".sql", ".cbl", ".cpy", ".txt"}:
                 digest.update(str(file.relative_to(ROOT)).encode())

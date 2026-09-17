@@ -29,3 +29,11 @@
 :root[data-theme=light] body[data-layout=migration-desk]{--bg:#f2f2ef;--surface:#fafaf7;--text:#252b24;--muted:#636b5d;--line:#d3d9cb;--accent:#49613e;--code:#e9ede3}
 :root[data-theme=light] body[data-layout=case-investigator]{--bg:#f4f1f0;--surface:#fffdfc;--text:#3b2925;--muted:#76615b;--line:#e3d8d3;--accent:#805242;--code:#f0eae7}
 .side-by-side>section,.investment-grid>section,.investment-grid>aside,.quality-grid>section,.specimen-grid>section,.specimen-grid>aside,.reader-layout>*,.exception-split>*,.incident-columns>*,.funding-memo>*{min-width:0}.case-link[aria-current=true]{color:var(--accent);border-bottom-color:var(--accent);font-weight:650}
+
+/* Long evidence identifiers must wrap inside narrow grids rather than widen the page. */
+.report{overflow-wrap:anywhere}
+.side-by-side>*,.evidence-columns>*,.two-column>*{min-width:0}
+@media(max-width:800px){.side-by-side,.evidence-columns,.two-column{grid-template-columns:minmax(0,1fr)}}
+
+/* Closed disclosure content must not contribute intrinsic overflow on small screens. */
+.disclosure:not([open])>:not(summary){display:none}

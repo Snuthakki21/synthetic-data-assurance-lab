@@ -1,0 +1,40 @@
+/* Persistent product workspaces use the active application's design tokens. */
+.workspace-panel { padding: 1.5rem 0 3rem; }
+.workspace-section-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:1.5rem; margin:0 0 1.75rem; }
+.workspace-section-heading h2 { margin:0 0 .5rem; }
+.workspace-section-heading p { margin:0; max-width:70ch; color:var(--muted); }
+.workspace-editor { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; margin:1rem 0; }
+.workspace-editor label { flex:1 1 15rem; display:grid; gap:.4rem; font-size:.85rem; font-weight:600; }
+.workspace-panel input,.workspace-panel select,.workspace-panel textarea { width:100%; min-width:0; padding:.75rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:3px; font:inherit; }
+.workspace-panel textarea { resize:vertical; }
+.workspace-editor .button { align-self:end; min-height:2.7rem; }
+.workspace-notice { min-height:1.4rem; color:var(--muted); }
+.workspace-notice[data-error=true] { color:var(--negative); }
+.workspace-empty { padding:3rem 1.5rem; border:1px dashed var(--line); text-align:center; }
+.workspace-empty p { max-width:55ch; margin:0 auto; color:var(--muted); }
+.workspace-table { width:100%; border-collapse:collapse; font-size:.85rem; font-variant-numeric:tabular-nums; }
+.workspace-table th { text-align:left; padding:.8rem; border-bottom:1px solid var(--line); }
+.workspace-table td { padding:1rem .8rem; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere; max-width:40rem; }
+.workspace-table caption { text-align:left; padding:1rem 0; font-weight:650; }
+.workspace-table small { display:block; color:var(--muted); margin-top:.35rem; font-family:monospace; }
+.workspace-table select { min-width:5rem; }
+.workspace-table button { white-space:nowrap; }
+.row-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+.run-inspector { border-block:1px solid var(--line); margin:2rem 0; padding:1.5rem 0; }
+.run-inspector form { max-width:55rem; margin-top:1.5rem; }
+.run-inspector form>label { display:grid; gap:.5rem; margin:1rem 0; }
+.comparison-workspace { margin-top:2rem; }
+.input-diff { padding-left:1.2rem; }
+.input-diff li { margin-bottom:1rem; }
+.input-diff pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.8rem; max-height:14rem; overflow:auto; }
+.workspace-facts { display:flex; flex-wrap:wrap; gap:1rem 3rem; border-block:1px solid var(--line); padding:1rem 0; }
+.workspace-facts dt { color:var(--muted); font-size:.8rem; }
+.workspace-facts dd { margin:.4rem 0 0; font-variant-numeric:tabular-nums; }
+.product-mark { display:flex; align-items:center; gap:.75rem; }
+.product-mark span { display:block; font-size:.7rem; font-weight:400; color:var(--muted); margin-top:.2rem; }
+.tabs { overflow-x:auto; scrollbar-width:thin; }
+.tabs [role=tab] { white-space:nowrap; flex-shrink:0; }
+::selection { background:var(--accent); color:var(--surface); }
+a { text-underline-offset:.2em; }
+input,textarea { caret-color:var(--accent); }
+@media (max-width:680px) { .workspace-section-heading{display:block}.workspace-section-heading>.button{margin-top:1rem}.workspace-editor{display:grid;grid-template-columns:1fr}.workspace-editor label{min-width:0}.workspace-panel{padding-top:1rem}.workspace-table{font-size:.8rem}.row-actions{gap:.6rem}.workspace-facts{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.detail-actions{justify-content:flex-start} }

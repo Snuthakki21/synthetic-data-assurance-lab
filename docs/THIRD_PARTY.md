@@ -1,6 +1,6 @@
 # Third-party assets
 
-Original application Python/JavaScript, fixtures and documentation are licensed under the root MIT license by Seshu Nuthakki. Bundled third-party files are not relicensed by that statement.
+Original application Python/JavaScript, fixtures and documentation are licensed under the root MIT license by the project contributors. Bundled third-party files are not relicensed by that statement.
 
 The browser runtime in web/vendor/pyodide/ comes from the [Pyodide project](https://github.com/pyodide/pyodide). Its retained LICENSE is Mozilla Public License 2.0. The distribution contains CPython/WebAssembly and related compiled runtime assets with their upstream notices; see the [Pyodide source and licensing documentation](https://github.com/pyodide/pyodide) for corresponding sources. The local pyodide-lock.json records the runtime ABI, Python version and package checksums supplied by that distribution. It lists a package catalog, not proof that all listed packages are bundled or loaded.
 

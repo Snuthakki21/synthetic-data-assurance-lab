@@ -55,3 +55,15 @@ jobs:
           else
             echo 'No frontend unit test files are present in this checkout.'
           fi
+
+      - name: Verify installed application package outside checkout
+        if: matrix.python-version == '3.14'
+        shell: bash
+        run: |
+          python -m pip wheel --no-deps --wheel-dir "$RUNNER_TEMP/app-wheels" .
+          python -m venv "$RUNNER_TEMP/installed-app"
+          "$RUNNER_TEMP/installed-app/bin/python" -m pip install --no-deps "$RUNNER_TEMP"/app-wheels/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/installed-app/bin/application" list
+          "$RUNNER_TEMP/installed-app/bin/application" run --output installed-report.json
+          "$RUNNER_TEMP/installed-app/bin/application" build --output installed-site

@@ -17,3 +17,9 @@ reports/
 node_modules/
 
 .export-manifest.json
+
+var/
+*.sqlite
+*.sqlite-*
+*.egg-info/
+build/

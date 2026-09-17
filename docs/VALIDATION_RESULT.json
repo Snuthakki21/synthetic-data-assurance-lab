@@ -1,0 +1,57 @@
+{
+  "repo": "synthetic-data-assurance-lab",
+  "project_id": "synthetic_data_foundry",
+  "title": "Synthetic Data Assurance Lab",
+  "coverage": 98.0614657210402,
+  "python_tests": 144,
+  "frontend_passed": 48,
+  "examples": 4,
+  "release": "2.0.0",
+  "python_skipped": 2,
+  "frontend_skipped": 6,
+  "browser": {
+    "repo": "synthetic-data-assurance-lab",
+    "fresh": true,
+    "history": true,
+    "branded": true,
+    "title": "Synthetic Data Assurance Lab"
+  },
+  "mobile": {
+    "repo": "synthetic-data-assurance-lab",
+    "workspace": {
+      "scroll": 375,
+      "width": 375
+    },
+    "library": {
+      "scroll": 375,
+      "width": 375
+    },
+    "usable": true
+  },
+  "installed_wheel": {
+    "repository": "synthetic-data-assurance-lab",
+    "status": "passed",
+    "project_id": "synthetic_data_foundry",
+    "wheel_bytes": 6453291,
+    "wheel_file": "synthetic_data_assurance_lab-2.0.0-py3-none-any.whl",
+    "installed_cli": true,
+    "default_run": true,
+    "explicit_run": true,
+    "outside_checkout_build": true,
+    "packaged_application_source": true,
+    "fixture_count": 4,
+    "expected_fixture_count": 4,
+    "examples": 4,
+    "missing_runtime_assets": [],
+    "seconds": 3.559,
+    "wheel_sha256": "35bae08ede04ce4e86d8ab2be9ef5fccbca98fa482a3e6b732561bbaba0285ba",
+    "vendor_manifest_hashes_verified": 8,
+    "source_fixture_inventory_complete": true,
+    "personal_author_metadata_absent": true,
+    "pyproject_sha256": "6070cdd59fe3075a32595dc2ed4cd82285294cf5e99d020dd1e4d6c16bdc5218",
+    "container_definition_sha256": "c205c738978ce7cecb779e14d604b3736429be760747f5880abcbf2d099c4e6b",
+    "compose_definition_sha256": "32c8bb3ab89a30043978d12874cb8c91001fcb762269765ace46fe46265faf91",
+    "docker_runtime_verified": false
+  },
+  "source_sha256": "7c7ce7679f1056717cac4f2859a9fde10911ceff6c85035fd9292ad262e62403"
+}

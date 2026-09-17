@@ -1,0 +1,21 @@
+{
+  "review": "Independent automated Staff Engineer domain review",
+  "reviewed_on": "2026-09-17",
+  "verdict": "pass_after_retest",
+  "sha256": {
+    "app/ai/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/ai/assistance.py": "4ccf52d8a5d6aaa2dbbba0cd466ac8c7a95da06ee3d4beb9dc68d5d428805a19",
+    "app/application/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/application/product.py": "843518ca5ca4637b30687f5ac414905cc8eea19b70a5412e674b83090bb47714",
+    "app/domain/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "app/domain/analysis.py": "d29c952ab052636388b17fb84deb9ef3c6d3d49e6cb86a705186fb788b76a9c7",
+    "app/domain/assurance.py": "201d98298dc726e2289864881e3d46cbdbfd57d864638960200f77c215621759",
+    "app/domain/generation.py": "2bc80743841e5037ce7832b2923a2d7e0e6f541d87c1c895ae2a418ffe86de36",
+    "app/domain/integrity.py": "27de4102993093bd0278ea0031f3cf0eea91af835fb3184915c2fdf48ff65370",
+    "app/domain/schema.py": "e713954819fdbfed7d10ada4ccd177f152e035bf4acaa9614d954a689b88dc73",
+    "docs/PRODUCT.md": "50f0d3a6790782d0e7e354528b578eed75265c989ccb8c89af262e7e054b0d0f",
+    "projects/synthetic_data_foundry/project.py": "b3def9fb894e5d2fbfdf22964a52f2af946f08b7135881e8a296c2fcb3d8741e",
+    "tests/test_product_review.py": "ab821695ac78f6cb13fcaa8718c77f080dc6de7f61b7480d1b28953da4a93c2e",
+    "web/templates/synthetic_data_foundry.js": "ecce177a90215a8b7125909d0286dd355ca04135b3095f311743933d92a642f6"
+  }
+}

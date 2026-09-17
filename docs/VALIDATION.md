@@ -1,35 +1,39 @@
-# Standalone verification evidence
+# Version 2 validation
 
-Checked at 2026-09-17T05:01:32.534575+00:00. These results come from commands executed inside this repository after export.
-
-Runtime versions: Python 3.14.7; Node.js v25.9.0.
-
-Standalone release verification: **PASS**. All recorded commands passed.
+Verified 2026-09-17. This report records executed checks, separate from the domain and shared-platform reviewer verdicts.
 
 | Check | Observed result |
 |---|---|
-| Python unit and integration tests | 80 discovered; 78 executed; 2 skipped |
-| Statement coverage | 635/640 (99.22%) |
-| Branch coverage | 314/320 (98.12%) |
-| Frontend tests | 31 discovered; 25 executed; 6 skipped |
-| Built application discovery | synthetic_data_foundry |
-| Installed project directories | synthetic_data_foundry |
-| Installed UI templates | synthetic_data_foundry |
-| Missing README targets | [] |
-| Default input | Executed through the repository CLI; saved in `examples/report.json` |
+| Python domain, runtime, API, storage and independent regression suites | 142 passed; 2 absent-project cases skipped |
+| JavaScript domain presentation, interaction state and workspace suites | 48 passed; 6 absent-project cases skipped |
+| Measured Python statement + branch coverage | **98.06%** across `app`, `portfolio` and `projects` |
+| Static build with executed scenarios | 4 scenarios, one product |
+| Actual browser execution | Fresh Python-worker result and retained execution history observed |
+| Mobile layout | Workspace and scenario library fit the 390px test viewport without page overflow |
+| Installed wheel | CLI/list/default run/explicit run/build passed outside source checkout; fixtures/runtime licenses and checksums verified |
+| Independent automated review | Domain and shared-platform findings corrected and independently retested |
 
-Reproduce from the repository root:
+The shared test harness skips cases for products absent from this standalone distribution; skips are not counted as passes. Measurements include existing failure-path tests and newly authored independent regression tests. Coverage describes executed branches, not a guarantee of correctness on every possible input.
+
+## Reproduce
 
 ```sh
 python -m pip install -r requirements-dev.txt
 python -m coverage run -m unittest discover -s tests -v
 python -m coverage report --fail-under=90
-python -m portfolio build --output dist
-node --test tests/frontend.test.mjs
+python -m portfolio build
+node --test tests/*.test.mjs
+python -m pip wheel --no-deps --wheel-dir build/wheels .
 ```
 
-Application source SHA-256: `c401994ce85c6cb0bb217857567a12534d4cc8e3b807025f98c360493b178d54`.
+See [domain review](STAFF_REVIEW_V2.md), [platform review](STAFF_PLATFORM_REVIEW.md), [package review](PACKAGE_REVIEW.md), and [machine-readable results](VALIDATION_RESULT.json). [GitHub Actions](https://github.com/Snuthakki21/synthetic-data-assurance-lab/actions) runs Python 3.11/3.14, frontend/build checks and an installed-package check before Pages publication.
 
-Coverage includes this application and its shared Python runtime. Skipped tests exercise capabilities belonging to applications absent from this standalone repository. Provider transport tests use controlled doubles; these counts are not live-model accuracy measurements. The frontend suite exercises rendering, escaping, input binding and asynchronous state with controlled DOM/worker harnesses; it is not an exhaustive visual, accessibility or browser compatibility audit. Coverage measures executed code paths and does not establish semantic correctness.
+## Browser and operating evidence
 
-See the solution-specific independent review linked in the README and the [shared runtime review](INDEPENDENT_RUNTIME_REVIEW.md) for review findings, repairs and limits.
+[Desktop view](screenshots/desktop.png) and [mobile view](screenshots/mobile.png) show the actual application interface. Each product was run in the browser and its successful execution was observed in history. Additional shared-flow checks saved a scenario, reloaded browser storage, recorded a native review and compared changed native inputs/results. The native stored run retained its earlier evidence review after later executions.
+
+The Python source digest for the executed sample is `7c7ce7679f1056717cac4f2859a9fde10911ceff6c85035fd9292ad262e62403`. Reviewer manifests separately identify the actual files they examined. Executed reports preserve their own timestamp, input hash, source hash and model mode.
+
+## Limits of this validation
+
+These are automated tests and separate automated Staff Engineer reviews, not external human certification. Fixtures and held-out model examples are synthetic. Live model-provider contracts use controlled substitute responses in tests; no paid provider execution, enterprise benchmark or deployed production integration is claimed. Docker/Compose configuration is supplied and reviewed; Docker was unavailable in the verification environment, so container runtime behavior is not claimed as tested. The native application is documented as single-operator, with optional shared-token access rather than multi-user roles.

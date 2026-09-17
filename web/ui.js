@@ -25,10 +25,14 @@ export const status=(text,good)=>`<span class="status-tag ${good?'good':'attenti
 export const facts=(rows)=>`<dl class="fact-list">${rows.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
 export const block=(title,body)=>`<section class="work-block"><h3>${esc(title)}</h3>${body}</section>`;
 export function applyField(payload,path,value,type){
- const keys=path.split('.');if(keys.some(k=>['__proto__','prototype','constructor'].includes(k)))throw new Error('Invalid input field');
- let node=payload;for(const key of keys.slice(0,-1)){if(!node[key]||typeof node[key]!=='object')throw new Error('This field is missing from the input. Restore a sample.');node=node[key];}
+ const keys=path.split('.');if(keys.some(k=>!k||['__proto__','prototype','constructor'].includes(k)))throw new Error('Invalid input field');
  if(type==='number'){if(value===''||!Number.isFinite(Number(value)))throw new Error('Enter a finite number.');value=Number(value);}
  if(type==='boolean'||type==='checkbox')value=value===true||value==='true';
  if(type==='list')value=String(value).split(',').map(s=>s.trim()).filter(Boolean);
+ let node=payload;for(const key of keys.slice(0,-1)){
+  if(!Object.hasOwn(node,key))node[key]={};
+  if(!node[key]||typeof node[key]!=='object'||Array.isArray(node[key]))throw new Error('This field requires an object in the input.');
+  node=node[key];
+ }
  node[keys.at(-1)]=value;return payload;
 }

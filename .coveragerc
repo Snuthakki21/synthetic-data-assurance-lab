@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = portfolio,projects
+source = portfolio,projects,app
 relative_files = True
 omit = */__pycache__/*,*/tests/*
 

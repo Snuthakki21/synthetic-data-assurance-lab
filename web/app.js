@@ -1,10 +1,12 @@
 import {applyField} from './ui.js';
+import {WorkspaceController} from './workspace/controller.js';
 'use strict';
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pretty = key => key.replaceAll('_',' ').replace(/\b\w/, c => c.toUpperCase());
 let catalog, current, currentReport, worker, pendingRun, serverMode = null, activeController = null, runSerial = 0;
+let workspace = null, serverHealth = null;
 let selectedExample = 0, design, renderedPayload = null, importSerial = 0, userTheme = null;
 
 function announce(message) { $('#status').textContent = message; }
@@ -36,15 +38,18 @@ function renderReport(report, fresh = false, inputSnapshot = $('#input').value) 
 function setTab(name) {
   $$('.tabs [role=tab]').forEach(b=>{const active=b.dataset.tab===name;b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;});
   $$('.tab-panel').forEach(panel=>panel.hidden=panel.id!==`panel-${name}`);
+  if (['library','history','operations'].includes(name)) workspace?.perform(() => workspace.refresh());
 }
 function showProject(project) {
+  workspace?.destroy();
   current = project; selectedExample = 0;
   document.body.dataset.project=project.id;document.body.dataset.layout=design.layout;
   if(!userTheme)document.documentElement.dataset.theme=['incident-room','routing-lab'].includes(design.layout)?'dark':'light';
   $('#source-link').href=project.repo_url; $('#footer-source').href=project.repo_url;
   const detail = $('#project-detail'); detail.hidden = false;
-  document.title = `${project.title} | Seshu Nuthakki`;
-  detail.innerHTML = `<div class="detail-top"><div class="detail-heading"><p class="eyebrow">${escapeHtml(design.label)}</p><h1>${escapeHtml(project.title)}</h1><p>${escapeHtml(project.question)}</p></div><div class="detail-actions"><a class="button" href="${escapeHtml(project.repo_url)}">Open repository ↗</a><a class="button" href="${escapeHtml(project.repo_url)}/blob/main/README.md">Read the executive brief ↗</a><button class="button" id="download">Download report</button></div></div><div class="tabs" role="tablist" aria-label="Project views"><button role="tab" id="tab-demo" aria-controls="panel-demo" aria-selected="true" data-tab="demo">Workspace</button><button role="tab" id="tab-architecture" aria-controls="panel-architecture" aria-selected="false" tabindex="-1" data-tab="architecture">Architecture</button><button role="tab" id="tab-leadership" aria-controls="panel-leadership" aria-selected="false" tabindex="-1" data-tab="leadership">Leadership evidence</button></div><section class="tab-panel" id="panel-demo" role="tabpanel" aria-labelledby="tab-demo"><div class="workspace-layout"><aside class="workspace-controls"><h2>${escapeHtml(design.controlsTitle)}</h2><div class="scenario-bar"><label>Load an example<select id="scenario">${project.examples.map((example,i)=>`<option value="${i}">${escapeHtml(example.label)}</option>`).join('')}</select></label><div id="project-controls"></div><button id="run" class="button primary">${escapeHtml(design.action)}</button><button id="cancel" class="button" hidden>Cancel run</button></div><p id="run-note" class="run-note">${serverMode?`Connected to the local application (${escapeHtml(serverMode)} mode).`:'Run the same Python application in your browser. The first run loads the execution engine.'} No account or API key is needed for local algorithms.</p><div id="error" role="alert" hidden class="error"></div></aside><div class="workspace-results"><div id="report" class="report" aria-live="polite"></div><details class="disclosure"><summary>Change the input data</summary><p class="fine">Edit the structured sample, then run it. Input stays in this browser unless you explicitly run a local server with a model provider.</p><label for="input" class="sr-only">Scenario input JSON</label><textarea id="input" spellcheck="false"></textarea><button class="button" id="restore">Restore selected sample</button><label class="import-label">Load a JSON input file<input id="input-file" type="file" accept=".json,application/json"></label></details></div></div></section><section class="tab-panel" id="panel-architecture" role="tabpanel" aria-labelledby="tab-architecture" hidden><h2>How the decision is made</h2><p>${escapeHtml(project.description)}</p><ol class="architecture">${project.architecture.map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><div class="patterns">${project.patterns.map(p=>`<span class="pattern">${escapeHtml(p)}</span>`).join('')}</div><div class="two-column"><div><h3>Risks the design addresses</h3><ul>${project.risks.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div><div><h3>Boundaries of this implementation</h3><ul>${project.limits.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div></div><a class="inline-link" href="${escapeHtml(project.repo_url)}/tree/main/tests">Inspect the tests ↗</a></section><section class="tab-panel" id="panel-leadership" role="tabpanel" aria-labelledby="tab-leadership" hidden><h2>Evidence for two levels of responsibility</h2><div class="two-column"><div><h3>Principal: engineering judgment</h3><p>${escapeHtml(project.principal)}</p><p>Inspect the algorithm, its failure cases, trust boundaries and documented tradeoffs in the repository.</p></div><div><h3>Director: delivery judgment</h3><p>${escapeHtml(project.director)}</p><p>Use the output to discuss ownership, acceptance criteria, investment priorities and the evidence needed before wider adoption.</p></div></div><h3>Business stakeholder</h3><p>${escapeHtml(project.buyer)}</p><a class="inline-link" href="${escapeHtml(project.repo_url)}/blob/main/docs/OPERATING_MODEL.md">Read the operating model ↗</a></section>`;
+  document.title = project.title;
+  $('#home-link').textContent = project.title;
+  detail.innerHTML = `<div class="detail-top"><div class="detail-heading"><h1>${escapeHtml(project.title)}</h1><p>${escapeHtml(project.question)}</p></div><div class="detail-actions"><a class="button" href="${escapeHtml(project.repo_url)}">Open repository ↗</a><a class="button" href="${escapeHtml(project.repo_url)}/blob/main/README.md">Documentation ↗</a><button class="button" id="download">Download report</button></div></div><div class="tabs" role="tablist" aria-label="Project views"><button role="tab" id="tab-demo" aria-controls="panel-demo" aria-selected="true" data-tab="demo">Workspace</button><button role="tab" id="tab-architecture" aria-controls="panel-architecture" aria-selected="false" tabindex="-1" data-tab="architecture">Architecture</button><button role="tab" id="tab-library" aria-controls="panel-library" aria-selected="false" tabindex="-1" data-tab="library">Scenario library</button><button role="tab" id="tab-history" aria-controls="panel-history" aria-selected="false" tabindex="-1" data-tab="history">Execution history</button><button role="tab" id="tab-operations" aria-controls="panel-operations" aria-selected="false" tabindex="-1" data-tab="operations">Operations</button></div><section class="tab-panel" id="panel-demo" role="tabpanel" aria-labelledby="tab-demo"><div class="workspace-layout"><aside class="workspace-controls"><h2>${escapeHtml(design.controlsTitle)}</h2><div class="scenario-bar"><label>Load an example<select id="scenario">${project.examples.map((example,i)=>`<option value="${i}">${escapeHtml(example.label)}</option>`).join('')}</select></label><div id="project-controls"></div><button id="run" class="button primary">${escapeHtml(design.action)}</button><button id="cancel" class="button" hidden>Cancel run</button></div><p id="run-note" class="run-note">${serverMode?`Connected to the local application (${escapeHtml(serverMode)} mode).`:'Run the same Python application in your browser. The first run loads the execution engine.'} No account or API key is needed for local algorithms.</p><div id="error" role="alert" hidden class="error"></div></aside><div class="workspace-results"><div id="report" class="report" aria-live="polite"></div><details class="disclosure"><summary>Change the input data</summary><p class="fine">Edit the structured sample, then run it. Browser runs stay on this device. Native runs are saved by the application server; live mode may send assembled evidence to the configured model provider.</p><label for="input" class="sr-only">Scenario input JSON</label><textarea id="input" spellcheck="false"></textarea><button class="button" id="restore">Restore selected sample</button><label class="import-label">Load a JSON input file<input id="input-file" type="file" accept=".json,application/json"></label></details></div></div></section><section class="tab-panel" id="panel-architecture" role="tabpanel" aria-labelledby="tab-architecture" hidden><h2>How the decision is made</h2><p>${escapeHtml(project.description)}</p><ol class="architecture">${project.architecture.map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><div class="patterns">${project.patterns.map(p=>`<span class="pattern">${escapeHtml(p)}</span>`).join('')}</div><div class="two-column"><div><h3>Risks the design addresses</h3><ul>${project.risks.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div><div><h3>Boundaries of this implementation</h3><ul>${project.limits.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div></div><a class="inline-link" href="${escapeHtml(project.repo_url)}/tree/main/tests">Inspect the tests ↗</a></section>${WorkspaceController.panels()}<section class="tab-panel workspace-panel" id="panel-operations" role="tabpanel" aria-labelledby="tab-operations" hidden><h2>Operating the application</h2><div id="workspace-diagnostics"></div><div class="two-column"><div><h3>Data handling</h3><p>Browser mode stores scenarios and results in this browser. Native mode stores them in SQLite. A configured live model provider receives only the evidence assembled by the application.</p><a class="inline-link" href="${escapeHtml(project.repo_url)}/blob/main/docs/WORKSPACE.md">Storage, backup and recovery ↗</a></div><div><h3>Runbooks and contracts</h3><p>Inspect deployment requirements, API behavior, model contracts and the tests that verify the boundaries.</p><a class="inline-link" href="${escapeHtml(project.repo_url)}/tree/main/docs">Application documentation ↗</a></div></div></section>`;
   $$('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
   $('.tabs').onkeydown = event => {
     if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
@@ -61,11 +66,19 @@ function showProject(project) {
   $('#cancel').onclick = () => cancelRun();
   $('#download').onclick = downloadReport;
   restoreExample(); renderReport(project.examples[0].report);
+  workspace = new WorkspaceController(project, {
+    native: Boolean(serverMode), authenticationRequired: Boolean(serverHealth?.authentication_required),
+    readInput: () => JSON.parse($('#input').value),
+    loadInput: payload => {cancelRun(true); ++importSerial; $('#input').value=JSON.stringify(payload,null,2);renderControls(payload);setBusy(false,'Saved input loaded. Run it to compute a new result.');setTab('demo');},
+    loadRun: (payload,report) => {cancelRun(true);++importSerial;$('#input').value=JSON.stringify(payload,null,2);renderControls(payload);renderReport(report,false,$('#input').value);setBusy(false,'Stored input and result loaded.');setTab('demo');},
+    announce,
+  });
+  workspace.initialize().catch(error => workspace?.notice(error.message,true));
 
 }
 function renderControls(payload){
  $('#project-controls').innerHTML=design.controls(payload);
- $$('[data-path]').forEach(input=>input.onchange=()=>{
+ $$('[data-path]').forEach(input=>input.oninput=input.onchange=()=>{
    try{++importSerial;const p=JSON.parse($('#input').value);applyField(p,input.dataset.path,input.type==='checkbox'?input.checked:input.value,input.dataset.valueType);$('#input').value=JSON.stringify(p,null,2);$('#error').hidden=true;announce('Input changed. Run again to update the results.');}
    catch(error){showError(error.message);}
  });
@@ -125,9 +138,17 @@ async function runScenario() {
   setBusy(true,'Running the application…');$('#error').hidden=true;
   try{
     let report;
-    if(serverMode){const response=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:targetId,payload}),signal:activeController.signal});report=await response.json();if(!response.ok)throw new Error(report.error||'The application rejected this input.');}
+    if(serverMode && workspace) report=await workspace.executeNative(payload,activeController.signal);
+    else if(serverMode){const response=await fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project_id:targetId,payload}),signal:activeController.signal});report=await response.json();if(!response.ok)throw new Error(report.error||'The application rejected this input.');}
     else report=await browserRun(payload);
-    if(runSerial===serial&&current?.id===targetId){renderReport(report,true,inputSnapshot);setBusy(false,'Execution finished. The report below reflects the input you ran.');}
+    if(runSerial===serial&&current?.id===targetId){
+      renderReport(report,true,inputSnapshot);setBusy(false,'Execution finished. The report below reflects the input you ran.');
+      const acceptedWorkspace = workspace;
+      if(acceptedWorkspace){
+        try{if(!serverMode)await acceptedWorkspace.recordBrowserRun(payload,report);await acceptedWorkspace.refresh();}
+        catch(error){if(runSerial===serial&&current?.id===targetId)showError('Result computed, but workspace saving or refresh failed: '+error.message+'. Download this result before leaving.');}
+      }
+    }
   }catch(error){if(runSerial===serial&&current?.id===targetId){$('#error').textContent=error.message;$('#error').hidden=false;setBusy(false,'No new result was accepted. The previous report is still available.');}}
 }
 function downloadReport(){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify(currentReport,null,2)],{type:'application/json'}));a.href=url;a.download=`${current.id}-report.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -143,7 +164,7 @@ async function route(){
 }
 async function init(){
   try{
-    if(location.hostname==='127.0.0.1'||location.hostname==='localhost'){try{const h=await fetch('/api/health');if(h.ok)serverMode=(await h.json()).mode;}catch{}}
+    try{const h=await fetch('/api/health');if(h.ok){serverHealth=await h.json();if(serverHealth.workspace)serverMode=serverHealth.mode;}}catch{}
     const response=await fetch('catalog.json');if(!response.ok)throw new Error('Project catalog unavailable.');catalog=await response.json();
     $('#theme').onclick=()=>{const dark=document.documentElement.dataset.theme==='dark'||(!document.documentElement.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);userTheme=dark?'light':'dark';document.documentElement.dataset.theme=userTheme;};
     window.addEventListener('hashchange',route);route();

@@ -1,19 +1,32 @@
-# Source-checkout application metadata. No runtime package installation is required.
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "synthetic-data-assurance-lab"
-version = "1.0.0"
-description = "An inspectable enterprise AI reference application with original synthetic data"
+version = "2.0.0"
+description = "Synthetic data assurance lab with versioned scenarios, execution evidence and review workflows"
 requires-python = ">=3.11"
 dependencies = []
-authors = [{name = "Seshu Nuthakki"}]
 license = "MIT"
 
 [tool.coverage.run]
 branch = true
-source = ["portfolio", "projects"]
+source = ["portfolio", "projects", "app"]
 relative_files = true
 
 [tool.coverage.report]
 fail_under = 90
 show_missing = true
 skip_empty = true
+
+[project.scripts]
+application = "portfolio.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["portfolio*", "app*", "projects*", "web*"]
+exclude = ["*.tests*", "*.__pycache__*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.csv", "*.sql", "*.cbl", "*.cpy", "*.txt", "*.md", "*.html", "*.js", "*.mjs", "*.css", "*.wasm", "*.zip", "*.map", "LICENSE", "NOTICE", "COPYING"]
