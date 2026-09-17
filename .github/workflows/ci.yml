@@ -1,0 +1,57 @@
+name: Tests and coverage
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.14']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install test reporting dependency
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run all unit and independent review tests
+        run: python -m coverage run -m unittest discover -s tests -v
+      - name: Enforce measured coverage
+        run: python -m coverage report --fail-under=90
+      - name: Write coverage artifact
+        if: always()
+        run: python -m coverage xml
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: coverage-python-${{ matrix.python-version }}
+          path: coverage.xml
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Build executed browser examples
+        run: python -m portfolio build --output dist
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Run frontend unit tests when present
+        shell: bash
+        run: |
+          mapfile -t frontend_tests < <(git ls-files 'tests/*.test.js' 'tests/*.test.mjs' 'tests/test_*.js' 'tests/test_*.mjs')
+          if (( ${#frontend_tests[@]} )); then
+            node --test "${frontend_tests[@]}"
+          else
+            echo 'No frontend unit test files are present in this checkout.'
+          fi

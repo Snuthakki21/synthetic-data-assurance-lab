@@ -1,0 +1,2 @@
+# Tests use stdlib unittest; coverage is only a development/reporting dependency.
+coverage==7.16.1

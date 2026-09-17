@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = portfolio,projects
+relative_files = True
+omit = */__pycache__/*,*/tests/*
+
+[report]
+fail_under = 90
+show_missing = True
+skip_empty = True
+precision = 2
+
+[xml]
+output = coverage.xml

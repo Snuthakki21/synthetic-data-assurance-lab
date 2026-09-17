@@ -1,0 +1,19 @@
+# Source-checkout application metadata. No runtime package installation is required.
+[project]
+name = "synthetic-data-assurance-lab"
+version = "1.0.0"
+description = "An inspectable enterprise AI reference application with original synthetic data"
+requires-python = ">=3.11"
+dependencies = []
+authors = [{name = "Seshu Nuthakki"}]
+license = "MIT"
+
+[tool.coverage.run]
+branch = true
+source = ["portfolio", "projects"]
+relative_files = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_empty = true
